@@ -48,7 +48,7 @@ class QuestionGenerator:
         prompt = (
             f"{prompt_pre}",
             "其中难度系数越大，难度越高，总共有1、2、3、4、5这5个档",
-            "最终结果以json格式输出，包括“题型”、“题干”、“正确答案”、“答案解析”、“分值”、“难度系数”、“知识点”、“标签”以及ABCD选项",
+            "最终结果以json格式输出，包括“题型”、“题干”、“正确答案”、“答案解析”、“分值”、“难度系数”、“知识点”、“标签”以及A、B、C、D选项",
             "题目示例：",
             f"{json_str}",
         )
@@ -81,7 +81,7 @@ class QuestionGenerator:
 
 # 使用优化后的代码进行题目生成和处理
 generator = QuestionGenerator()
-prompt = generator.generate_question("历史", "填空题", 3, 3, 2)
+prompt = generator.generate_question("历史", "选择题", 3, 3, 2)
 response_text = generator.generate_content(prompt)
 print(response_text)
 

@@ -1,0 +1,75 @@
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <title>题目生成器</title>
+       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   </head>
+   <body>
+       <form id="question-form">
+           <label for="subject">学科：</label>
+           <input type="text" id="subject" name="subject" required><br>
+           <label for="question-type">题型：</label>
+           <input type="text" id="question-type" name="question-type" required><br>
+           <label for="difficulty">难度系数：</label>
+           <input type="number" id="difficulty" name="difficulty" min="1" max="5" required><br>
+           <label for="num-questions">题目数量：</label>
+           <input type="number" id="num-questions" name="num-questions" min="1" required><br>
+           <label for="score">分值：</label>
+           <input type="number" id="score" name="score" min="0" required><br>
+           <label for="knowledge">知识点（可选）：</label>
+           <input type="text" id="knowledge" name="knowledge"><br>
+           <label for="tags">标签（顿号分隔，可选）：</label>
+           <input type="text" id="tags" name="tags"><br>
+           <button type="submit">生成题目</button>
+       </form>
+       <div id="result"></div>
+
+       <script>
+           $('#question-form').on('submit', function(event) {
+               event.preventDefault();
+               const formData = $(this).serializeArray();
+               const jsonData = {};
+               formData.forEach(field => {
+                   jsonData[field.name] = field.value;
+               });
+
+               $.ajax({
+                   url: '/generate_questions',
+                   method: 'POST',
+                   contentType: 'application/json',
+                   data: JSON.stringify(jsonData),
+                   success: function(response) {
+                       let resultDiv = $('#result');
+                       resultDiv.empty();
+                       response.forEach(question => {
+                           // 在此处编写将问题渲染到页面的逻辑，假设问题结构如下：
+                           let questionHtml = `
+                               <div class="question">
+                                   <h3>题干：${question.question}</h3>
+                                   <p>A：${question.optionA}</p>
+                                   <p>B：${question.optionB}</p>
+                                   <p>C：${question.optionC}</p>
+                                   <p>D：${question.optionD}</p>
+                                   <p>正确答案：${question.correctAnswer}</p>
+                                   <p>答案解析：${question.answerExplanation}</p>
+                                   <p>分值：${question.score}</p>
+                                   <p>难度系数：${question.difficulty}</p>
+                                   <p>知识点：${question.knowledge}</p>
+                                   <p>标签：${question.tags.join(', ')}</p>
+                               </div>
+                           `;
+                           resultDiv.append(questionHtml);
+                       });
+                   },
+                   error: function(jqXHR, textStatus, errorThrown) {
+                       console.error(textStatus, errorThrown);
+                       alert('生成题目时发生错误，请稍后再试');
+                   }
+               });
+           });
+       </script>
+   </body>
+   </html>
+   
