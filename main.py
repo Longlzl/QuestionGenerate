@@ -50,7 +50,8 @@ class QuestionGenerator:
             "其中难度系数越大，难度越高，总共有1、2、3、4、5这5个档",
             "最终结果以json格式输出，包括“题型”、“题干”、“正确答案”、“答案解析”、“分值”、“难度系数”、“知识点”、“标签”以及A、B、C、D选项",
             "题目示例：",
-            f"{json_str}",
+            f"{json_str}"
+            f"其中填空题有几个空就用几个_代替"
         )
         return prompt
 
@@ -72,7 +73,6 @@ class QuestionGenerator:
     def generate_content(self, prompt: str):
         try:
             model = genai.GenerativeModel('gemini-pro')
-            # 使用代理
             response = model.generate_content(prompt)
             return response.text
         except Exception as e:
@@ -81,7 +81,7 @@ class QuestionGenerator:
 
 # 使用优化后的代码进行题目生成和处理
 generator = QuestionGenerator()
-prompt = generator.generate_question("历史", "选择题", 3, 3, 2)
+prompt = generator.generate_question("历史", "填空题", 3, 3, 2)
 response_text = generator.generate_content(prompt)
 print(response_text)
 
@@ -107,9 +107,9 @@ else:
         # 将JSON数据转换为DataFrame
         df = pd.DataFrame(data)
         # 写入Excel文件
-        with pd.ExcelWriter('generated_questions.xlsx') as writer:
-            df.to_excel(writer, index=False, sheet_name='Questions')
-        print("已成功将生成的题目写入'generated_questions.xlsx'文件中。")
+        with pd.ExcelWriter('generated_questions.xlsx', engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Sheet1', index=False, header=False, startrow=20)
+        print("已成功将生成的题目写入'小雅导入题目模板v2.1.2200.xlsx'文件中。")
     except Exception as e:
         print(f"写入Excel文件时发生错误: {e}")
     # 如果有需要，还可以添加一个finally子句，用于进行资源清理等操作
